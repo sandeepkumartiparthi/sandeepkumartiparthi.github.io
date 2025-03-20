@@ -29,10 +29,6 @@
             font-family: 'Poppins', sans-serif;
             font-size: 3.5rem;
             color: #ffffff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 1rem;
         }
 
         header nav {
@@ -78,12 +74,41 @@
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
         }
 
-        .glass-card h3 {
-            margin-bottom: 1rem;
-            font-size: 1.8rem;
+        footer {
+            padding: 2rem;
+            background: rgba(0, 0, 0, 0.8);
+            text-align: center;
+        }
+
+        .floating-button {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #00bcd4;
+            border: none;
+            border-radius: 50%;
+            color: white;
+            padding: 15px;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+        }
+
+        .floating-button:hover {
+            transform: scale(1.1);
+        }
+
+        /* Styling for clickable plain text */
+        #linkedin, #facebook, #email, #phone {
+            cursor: pointer;
+            color: #fff;
+            text-decoration: none;
+        }
+
+        #linkedin:hover, #facebook:hover, #email:hover, #phone:hover {
             color: #00bcd4;
         }
 
+        /* Styled list for skills and hobbies */
         .styled-list {
             list-style: none;
             padding: 0;
@@ -111,37 +136,12 @@
             color: #00bcd4;
             transform: scale(1.05);
         }
-
-        footer {
-            padding: 2rem;
-            background: rgba(0, 0, 0, 0.8);
-            text-align: center;
-        }
-
-        .floating-button {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background: #00bcd4;
-            border: none;
-            border-radius: 50%;
-            color: white;
-            padding: 15px;
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
-            cursor: pointer;
-        }
-
-        .floating-button:hover {
-            transform: scale(1.1);
-        }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
 <body>
     <header>
-        <h1>
-            MY PROFILE
-        </h1>
+        <h1>MY PROFILE</h1>
         <nav>
             <a href="#about">About</a>
             <a href="#education">Education</a>
@@ -176,7 +176,7 @@
             <p>B.Tech (Pursuing): Sasi Institute of Technology and Engineering</p>
         </div>
     </section>
-
+    
     <section id="skills">
         <div class="glass-card">
             <h3>Skills</h3>
@@ -197,18 +197,16 @@
     <section id="profiles">
         <div class="glass-card">
             <h3>Profile Links</h3>
-            <div class="social-links">
-                <a href="https://www.linkedin.com/in/sandeep-kumar-tiparthi-90723832a/" target="_blank">LinkedIn</a><br>
-                <a href="https://www.facebook.com/profile.php?id=100053843340891" target="_blank">Facebook</a>
-            </div>
+            <p>LinkedIn:<span id="linkedin">Sandeep Kumar Tiparthi</span></p>
+            <p>Facebook:<span id="facebook">Sandeep Kumar Tiparthi</span></p>
         </div>
     </section>
 
     <section id="contact">
         <div class="glass-card">
             <h3>Contact</h3>
-            <p>Email: <a href="mailto:sandeep.tiparthi@sasi.ac.in">sandeep.tiparthi@sasi.ac.in</a></p>
-            <p>Phone: <a href="tel:+919392646933">+91 9392646933</a></p>
+            <p>Email: <span id="email">Sandeep.Tiparthi@sasi.ac.in</span></p>
+            <p>Phone: <span id="phone">+91 9392646933</span></p>
         </div>
     </section>
 
@@ -219,6 +217,20 @@
     <button class="floating-button" onclick="scrollToTop()">↑</button>
 
     <script>
+        // Add click events for redirection
+        document.getElementById('linkedin').onclick = function() {
+            window.open('https://www.linkedin.com/in/sandeep-kumar-tiparthi-90723832a/', '_blank');
+        };
+        document.getElementById('facebook').onclick = function() {
+            window.open('https://www.facebook.com/profile.php?id=100053843340891', '_blank');
+        };
+        document.getElementById('email').onclick = function() {
+            window.location.href = 'mailto:sandeep.tiparthi@sasi.ac.in';
+        };
+        document.getElementById('phone').onclick = function() {
+            window.location.href = 'tel:+919392646933';
+        };
+
         function scrollToTop() {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
