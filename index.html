@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Sandeep Kumar Tiparthi's personal profile, showcasing education, skills, hobbies, and contact information.">
+    <meta name="keywords" content="Sandeep Kumar Tiparthi, Profile, Engineer, Web Developer, Skills, Education, Contact">
     <title>My Profile</title>
     <style>
         body {
@@ -23,12 +25,28 @@
         header {
             text-align: center;
             padding: 3rem 0;
+            position: relative;
         }
+        .profile-photo {
+    position: absolute; 
+    bottom: 120px;/* Adjust for exact alignment */
+    left: 500px; /* Adjust based on your layout */
+    width: 100px; /* Square size */
+    height: 100px;
+    border-radius: 15px; /* Square with rounded edges */
+    object-fit: cover;
+    border: 2px solid #fff;
+    z-index: 10; /* Ensure it's above other elements */
+}
+
+
+
 
         header h1 {
             font-family: 'Poppins', sans-serif;
             font-size: 3.5rem;
             color: #ffffff;
+            z-index: 2;
         }
 
         header nav {
@@ -136,11 +154,30 @@
             color: #00bcd4;
             transform: scale(1.05);
         }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2rem;
+            }
+            .glass-card {
+                padding: 1.5rem;
+            }
+            header nav {
+                flex-direction: column;
+                gap: 0.8rem;
+            }
+            header nav a {
+                padding: 0.5rem 1rem;
+            }
+        }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
 <body>
     <header>
+        <!-- Profile Photo -->
+        <img src="your-photo.jpg" alt="Sandeep Kumar Tiparthi" class="profile-photo">
         <h1>MY PROFILE</h1>
         <nav>
             <a href="#about">About</a>
@@ -153,14 +190,14 @@
 
     <section id="about">
         <div class="glass-card">
-            <h3>About Me</h3>
+            <h2>About Me</h2>
             <p>I am Sandeep Kumar Tiparthi, an aspiring individual committed to building a strong foundation in engineering and technology. My educational journey and exposure to programming and web development have shaped me into a problem-solver, eager to create meaningful and practical solutions.</p>
         </div>
     </section>
     
     <section id="hobbies">
         <div class="glass-card">
-            <h3>Hobbies</h3>
+            <h2>Hobbies</h2>
             <ul class="styled-list">
                 <li>Reading manga and novels</li>
                 <li>Watching anime</li>
@@ -171,7 +208,7 @@
 
     <section id="education">
         <div class="glass-card">
-            <h3>Education</h3>
+            <h2>Education</h2>
             <p>Diploma: Smt. B. Seetha Polytechnic</p>
             <p>B.Tech (Pursuing): Sasi Institute of Technology and Engineering</p>
         </div>
@@ -179,7 +216,7 @@
     
     <section id="skills">
         <div class="glass-card">
-            <h3>Skills</h3>
+            <h2>Skills</h2>
             <ul class="styled-list">
                 <li>C</li>
                 <li>C++</li>
@@ -196,15 +233,15 @@
 
     <section id="profiles">
         <div class="glass-card">
-            <h3>Profile Links</h3>
-            <p>LinkedIn:<span id="linkedin">Sandeep Kumar Tiparthi</span></p>
-            <p>Facebook:<span id="facebook">Sandeep Kumar Tiparthi</span></p>
+            <h2>Profile Links</h2>
+            <p>LinkedIn: <span id="linkedin">Sandeep Kumar Tiparthi</span></p>
+            <p>Facebook: <span id="facebook">Sandeep Kumar Tiparthi</span></p>
         </div>
     </section>
 
     <section id="contact">
         <div class="glass-card">
-            <h3>Contact</h3>
+            <h2>Contact</h2>
             <p>Email: <span id="email">Sandeep.Tiparthi@sasi.ac.in</span></p>
             <p>Phone: <span id="phone">+91 9392646933</span></p>
         </div>
@@ -234,6 +271,10 @@
         function scrollToTop() {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
+    </script>
+</body>
+</html>
+
     </script>
 </body>
 </html>
