@@ -1,0 +1,581 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>IRSA — Intelligent Resource System</title>
+
+<!-- Feather icons + Chart.js -->
+<script src="https://unpkg.com/feather-icons"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+/* ===== RESET & BASE ===== */
+:root{
+  --green-900:#0b3c12;
+  --green-800:#1b5e20;
+  --green-700:#2b7a0b;
+  --green-500:#81c784;
+  --bg-1:#eef6ee;
+  --card:#ffffff;
+  --muted:#6b6b6b;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family: Inter, "Segoe UI", Roboto, Arial, sans-serif;
+  background: linear-gradient(180deg, var(--bg-1) 0%, #fbfff9 100%);
+  color: #083214;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  line-height:1.5;
+  overflow-x:hidden;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ===== TOPBAR ===== */
+.topbar{
+  position:sticky;top:0;z-index:120;
+  display:flex;align-items:center;justify-content:space-between;
+  gap:12px;padding:10px 14px;
+  background: linear-gradient(90deg,var(--green-700),var(--green-500));
+  color:white;backdrop-filter: blur(6px);
+  box-shadow: 0 6px 18px rgba(10,70,20,0.12);
+}
+.brand{display:flex;flex-direction:column;line-height:1.05}
+.brand .title{font-weight:700;font-size:1.1rem;letter-spacing:0.2px}
+.brand .sub{font-size:0.75rem;opacity:0.95}
+
+/* nav area desktop */
+.topnav{display:flex;gap:8px;align-items:center;justify-content:center;flex:1}
+.nav-btn{
+  background:rgba(255,255,255,0.12);border:0;padding:8px 12px;border-radius:10px;color:white;font-weight:600;
+  display:flex;gap:8px;align-items:center;font-size:0.9rem;transition:transform .18s ease,background .18s;
+}
+.nav-btn:hover{transform:translateY(-3px);background:rgba(255,255,255,0.22)}
+
+/* actions right (desktop) */
+.header-actions{display:flex;gap:10px;align-items:center}
+
+/* hamburger (mobile) */
+.hamburger{display:none;background:transparent;border:0;color:white;font-size:1.3rem;padding:8px}
+.side-menu{
+  position:fixed;top:0;right:-100%;height:100%;width:280px;background:linear-gradient(180deg,#f7fff8, #e9f6ea);
+  box-shadow:-10px 0 30px rgba(0,0,0,0.12);z-index:150;padding:18px;transition:right .32s cubic-bezier(.2,.9,.3,1);
+  display:flex;flex-direction:column;gap:12px;
+}
+.side-menu.open{right:0}
+.side-menu .close-btn{align-self:flex-end;background:transparent;border:0;font-size:1.1rem;padding:6px}
+.side-menu .menu-item{display:flex;gap:10px;align-items:center;padding:10px;border-radius:8px;color:var(--green-800);font-weight:600}
+.side-menu .menu-item:hover{background:rgba(43,122,11,0.06)}
+
+/* overlay */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.35);z-index:140;opacity:0;pointer-events:none;transition:opacity .2s}
+.overlay.show{opacity:1;pointer-events:auto}
+
+/* ===== CONTAINER ===== */
+.container{max-width:1100px;margin:18px auto;padding:0 14px}
+
+/* HERO */
+.hero{
+  border-radius:14px;padding:28px;background:linear-gradient(135deg, #2b7a0b, #81c784);
+  color:#f8fff7;box-shadow:0 10px 30px rgba(10,70,20,0.12);display:flex;gap:18px;align-items:center;flex-wrap:wrap;
+}
+.hero-left{flex:1;min-width:220px}
+.hero h1{font-size:2rem;margin-bottom:8px;letter-spacing:0.3px}
+.hero p{opacity:0.95;margin-bottom:14px}
+.hero-actions{display:flex;gap:12px;flex-wrap:wrap}
+.btn{border:0;padding:10px 18px;border-radius:12px;font-weight:700;cursor:pointer}
+.btn-primary{background:linear-gradient(90deg,var(--green-800),var(--green-700));color:white;box-shadow:0 8px 20px rgba(10,70,20,0.12)}
+.btn-secondary{background:rgba(255,255,255,0.14);color:#093612}
+
+/* hero art */
+.hero-art{
+  width:220px;height:140px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.06),rgba(255,255,255,0.02));
+  display:flex;align-items:center;justify-content:center;flex-direction:column;backdrop-filter: blur(3px);
+}
+
+/* particles right */
+.particles{position:absolute;right:14px;top:86px;pointer-events:none;opacity:0.12}
+
+/* CARDS GRID */
+.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:18px}
+.card{background:var(--card);padding:14px;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,0.06);cursor:pointer;transition:transform .22s,box-shadow .22s;display:flex;gap:12px;align-items:center}
+.card:hover{transform:translateY(-6px);box-shadow:0 12px 28px rgba(0,0,0,0.1)}
+.icon-wrap{width:44px;height:44px;border-radius:10px;background:linear-gradient(180deg,rgba(43,122,11,0.06),rgba(43,122,11,0.02));display:flex;align-items:center;justify-content:center;color:var(--green-700)}
+.card h3{font-size:1rem;margin-bottom:6px}
+.card p{font-size:0.95rem;color:var(--muted)}
+
+/* PAGES */
+.page{display:none;padding:18px 0}
+.page.active{display:block;animation:fadeInUp .45s ease both}
+.page-header{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+.search-inline{display:flex;gap:8px;align-items:center}
+.table-wrap{background:transparent;border-radius:12px;overflow:auto}
+table{width:100%;border-collapse:collapse;background:transparent}
+th,td{padding:12px 10px;text-align:left;border-bottom:1px solid rgba(10,70,20,0.06);background:var(--card)}
+th{background:linear-gradient(90deg,var(--green-600),var(--green-500));color:white}
+
+/* forms */
+.form-card{background:var(--card);padding:12px;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,0.04);display:flex;flex-direction:column;gap:10px}
+input,textarea,select{padding:10px;border-radius:10px;border:1px solid #dfeee0;outline:none}
+input:focus,textarea:focus{border-color:var(--green-700);box-shadow:0 6px 18px rgba(43,122,11,0.06)}
+.chart-box{background:var(--card);padding:12px;border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,0.04);height:320px}
+
+/* listings */
+.listings{display:flex;flex-direction:column;gap:10px}
+.advisor-result{background:linear-gradient(90deg, rgba(43,122,11,0.04), rgba(43,122,11,0.02));padding:12px;border-radius:10px;color:var(--green-900)}
+
+/* footer */
+.footer{margin-top:26px;padding:20px 0;text-align:center;color:#6b6b6b;font-size:0.9rem}
+
+/* responsive */
+@media (max-width:980px){
+  .cards{grid-template-columns:1fr}
+  .hero{padding:22px}
+  .hero-art{width:180px;height:120px}
+  .topnav{display:none} /* hide desktop nav on smaller screens (hamburger used) */
+  .hamburger{display:inline-block}
+}
+
+@media (max-width:640px){
+  .brand .title{font-size:1rem}
+  .container{padding:0 12px}
+  .hero{flex-direction:column;align-items:flex-start}
+  .hero-art{width:100%;height:120px;border-radius:10px}
+  .page{padding:12px 0}
+  table th, table td{padding:10px 8px}
+  .side-menu{width:84%}
+}
+
+/* animations */
+@keyframes fadeInUp{from{transform:translateY(12px);opacity:0}to{transform:translateY(0);opacity:1}}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<header class="topbar" role="banner">
+  <div class="brand" aria-hidden="false">
+    <div class="title">IRSA</div>
+    <div class="sub">Intelligent Agricultural Sales</div>
+  </div>
+
+  <!-- desktop nav -->
+  <nav class="topnav" role="navigation" aria-label="Main navigation">
+    <button class="nav-btn" data-route="home"><i data-feather="home"></i> Home</button>
+    <button class="nav-btn" data-route="prices"><i data-feather="bar-chart-2"></i> Market Prices</button>
+    <button class="nav-btn" data-route="forecast"><i data-feather="trending-up"></i> Forecast</button>
+    <button class="nav-btn" data-route="listings"><i data-feather="shopping-cart"></i> Listings</button>
+    <button class="nav-btn" data-route="advisor"><i data-feather="archive"></i> Storage Advisor</button>
+    <button class="nav-btn" data-route="awareness"><i data-feather="info"></i> Awareness</button>
+    <button class="nav-btn" data-route="contact"><i data-feather="mail"></i> Contact</button>
+  </nav>
+
+  <!-- hamburger for mobile -->
+  <div class="header-actions">
+    <button class="hamburger" id="hamburger" aria-label="Open menu" title="Menu">☰</button>
+  </div>
+</header>
+
+<!-- overlay + side menu -->
+<div class="overlay" id="overlay" aria-hidden="true"></div>
+
+<aside class="side-menu" id="sideMenu" aria-hidden="true" aria-label="Mobile menu">
+  <button class="close-btn" id="closeMenu" aria-label="Close menu">✕</button>
+  <nav style="display:flex;flex-direction:column;gap:6px;margin-top:6px">
+    <div class="menu-item" data-route="home"><i data-feather="home"></i> Home</div>
+    <div class="menu-item" data-route="prices"><i data-feather="bar-chart-2"></i> Market Prices</div>
+    <div class="menu-item" data-route="forecast"><i data-feather="trending-up"></i> Forecast</div>
+    <div class="menu-item" data-route="listings"><i data-feather="shopping-cart"></i> Listings</div>
+    <div class="menu-item" data-route="advisor"><i data-feather="archive"></i> Storage Advisor</div>
+    <div class="menu-item" data-route="awareness"><i data-feather="info"></i> Awareness</div>
+    <div class="menu-item" data-route="contact"><i data-feather="mail"></i> Contact</div>
+  </nav>
+  <div style="margin-top:auto;font-size:0.9rem;color:#3b6e3a">IRSA • Offline demo</div>
+</aside>
+
+<!-- decorative particles -->
+<div class="particles" aria-hidden="true">
+  <svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg">
+    <g fill="#ffffff">
+      <circle cx="12" cy="12" r="3" opacity="0.6"></circle>
+      <circle cx="45" cy="24" r="2.5" opacity="0.5"></circle>
+      <circle cx="90" cy="18" r="3" opacity="0.4"></circle>
+      <circle cx="140" cy="30" r="2" opacity="0.5"></circle>
+      <circle cx="180" cy="10" r="2.8" opacity="0.35"></circle>
+    </g>
+  </svg>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="container" id="app">
+
+  <!-- HOME -->
+  <section id="home" class="page active" aria-labelledby="home-title">
+    <div class="hero" role="banner" aria-label="Intro">
+      <div class="hero-left">
+        <h1 id="home-title">IRSA — Intelligent Resource System</h1>
+        <p>Real-time market prices, short-term price forecasts, and a direct farmer-buyer listing system — works offline with local storage.</p>
+        <div class="hero-actions">
+          <button class="btn btn-primary" data-route="prices">View Prices</button>
+          <button class="btn btn-secondary" data-route="forecast">Forecast</button>
+        </div>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <!-- simple decorative SVG -->
+        <svg width="120" height="100" viewBox="0 0 120 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="6" y="44" width="108" height="44" rx="8" fill="white" opacity="0.06"/>
+          <path d="M20 60c6-8 14-10 22-6 8 4 18 2 24-6 6-8 12-10 18-6" stroke="white" stroke-opacity="0.9" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="24" cy="36" r="6" fill="white" opacity="0.12"/>
+          <circle cx="48" cy="28" r="8" fill="white" opacity="0.12"/>
+        </svg>
+      </div>
+    </div>
+
+    <div class="cards" role="list">
+      <div class="card" onclick="routeTo('prices')" role="listitem" aria-label="Market Prices">
+        <div class="icon-wrap"><i data-feather="bar-chart-2"></i></div>
+        <div><h3>Market Prices</h3><p>Check latest mandi rates & live updates.</p></div>
+      </div>
+
+      <div class="card" onclick="routeTo('forecast')" role="listitem" aria-label="Price Forecast">
+        <div class="icon-wrap"><i data-feather="trending-up"></i></div>
+        <div><h3>Price Forecast</h3><p>Short-term forecast using historical data (demo).</p></div>
+      </div>
+
+      <div class="card" onclick="routeTo('listings')" role="listitem" aria-label="Farmer Listings">
+        <div class="icon-wrap"><i data-feather="shopping-cart"></i></div>
+        <div><h3>Farmer Listings</h3><p>List produce for sale and contact buyers.</p></div>
+      </div>
+
+      <div class="card" onclick="routeTo('advisor')" role="listitem" aria-label="Storage Advisor">
+        <div class="icon-wrap"><i data-feather="archive"></i></div>
+        <div><h3>Storage Advisor</h3><p>Should you sell now or store?</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICES -->
+  <section id="prices" class="page" aria-labelledby="prices-title">
+    <div class="page-header">
+      <h2 id="prices-title">Market Prices</h2>
+      <div class="search-inline">
+        <input id="priceCropFilter" type="text" placeholder="Filter by crop (e.g., Paddy)" aria-label="Filter prices by crop">
+        <button class="small" id="btnRefreshPrices">Refresh</button>
+      </div>
+    </div>
+    <div class="table-wrap" id="pricesContainer" role="region" aria-live="polite"></div>
+  </section>
+
+  <!-- FORECAST -->
+  <section id="forecast" class="page" aria-labelledby="forecast-title">
+    <div class="page-header">
+      <h2 id="forecast-title">Price Forecast</h2>
+      <div class="search-inline">
+        <input id="forecastCrop" type="text" placeholder="Crop (e.g., Paddy)" aria-label="Forecast crop name">
+        <button class="small" id="btnGetForecast">Generate</button>
+      </div>
+    </div>
+
+    <div class="chart-box">
+      <canvas id="forecastChart" aria-label="Forecast chart" role="img"></canvas>
+      <div id="forecastValues" class="mt" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <!-- LISTINGS -->
+  <section id="listings" class="page" aria-labelledby="listings-title">
+    <div class="page-header"><h2 id="listings-title">List Produce for Sale</h2></div>
+
+    <form id="listingForm" class="form-card" aria-label="Listing form">
+      <input id="farmerName" type="text" placeholder="Farmer name" required aria-label="Farmer name">
+      <input id="listingCrop" type="text" placeholder="Crop" required aria-label="Crop">
+      <input id="listingQty" type="text" placeholder="Quantity (quintal/kg)" aria-label="Quantity">
+      <input id="listingPrice" type="number" placeholder="Expected price (₹)" aria-label="Expected price">
+      <input id="listingContact" type="text" placeholder="Contact phone" aria-label="Contact phone">
+
+      <div style="display:flex;gap:10px;align-items:center;margin-top:6px">
+        <button class="btn btn-primary" type="submit">Post Listing</button>
+        <button class="small" type="button" id="btnClearListings">Clear Local</button>
+      </div>
+    </form>
+
+    <h3 class="mt">Current Listings</h3>
+    <div id="listingsContainer" class="listings" role="region" aria-live="polite"></div>
+  </section>
+
+  <!-- ADVISOR -->
+  <section id="advisor" class="page" aria-labelledby="advisor-title">
+    <div class="page-header"><h2 id="advisor-title">Storage Advisor</h2></div>
+
+    <div class="form-card">
+      <label class="kv">Crop</label>
+      <input id="advisorCrop" type="text" placeholder="Crop (e.g., Paddy)">
+      <label class="kv">Current price (₹)</label>
+      <input id="advisorPrice" type="number" placeholder="Current market price">
+      <label class="kv">Quantity</label>
+      <input id="advisorQty" type="text" placeholder="Quantity (quintal/kg)">
+      <div style="margin-top:6px"><button id="btnGetAdvice" class="btn btn-primary">Get Advice</button></div>
+    </div>
+
+    <div id="advisorResult" class="advisor-result mt" role="status"></div>
+  </section>
+
+  <!-- AWARENESS -->
+  <section id="awareness" class="page" aria-labelledby="awareness-title">
+    <div class="page-header"><h2 id="awareness-title">Community Awareness</h2></div>
+    <div class="card">
+      <h3><i data-feather="info"></i> How IRSA helps</h3>
+      <ul style="margin-top:8px;color:var(--muted)">
+        <li>Real-time price checks</li>
+        <li>Direct buyer connections</li>
+        <li>Government schemes info (PM-Kisan, e-NAM)</li>
+        <li>Digital payments & safety tips</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact" class="page" aria-labelledby="contact-title">
+    <div class="page-header"><h2 id="contact-title">Contact</h2></div>
+    <div class="card">
+      <p>Project: IRSA — Intelligent Resource System for Agricultural Sales</p>
+      <p>Developer: <b>Your Name</b></p>
+      <p>Email: <i>your.email@example.com</i></p>
+    </div>
+  </section>
+
+  <footer class="footer">IRSA — Built with ❤️ • Works offline using localStorage • Demo</footer>
+</div>
+
+<script>
+/* ---------- FEATHER ICONS ---------- */
+feather.replace();
+
+/* ---------- HELPERS ---------- */
+function el(id){ return document.getElementById(id) }
+function routeTo(page){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  const tgt = document.getElementById(page);
+  if(tgt) tgt.classList.add('active');
+  // close side menu if open (mobile)
+  closeMenu();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ---------- MOBILE MENU (hamburger) ---------- */
+const hamburger = document.getElementById('hamburger');
+const sideMenu = document.getElementById('sideMenu');
+const overlay = document.getElementById('overlay');
+const closeBtn = document.getElementById('closeMenu');
+
+function openMenu(){
+  sideMenu.classList.add('open');
+  overlay.classList.add('show');
+  sideMenu.setAttribute('aria-hidden','false');
+  overlay.setAttribute('aria-hidden','false');
+  // set focus inside
+}
+function closeMenu(){
+  sideMenu.classList.remove('open');
+  overlay.classList.remove('show');
+  sideMenu.setAttribute('aria-hidden','true');
+  overlay.setAttribute('aria-hidden','true');
+}
+hamburger.addEventListener('click', openMenu);
+closeBtn.addEventListener('click', closeMenu);
+overlay.addEventListener('click', closeMenu);
+// menu items route
+document.querySelectorAll('.side-menu .menu-item').forEach(mi=>{
+  mi.addEventListener('click', ()=>{ routeTo(mi.dataset.route) })
+});
+
+// desktop nav buttons
+document.querySelectorAll('.topnav .nav-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>routeTo(btn.dataset.route));
+});
+
+/* ---------- MOCK BACKEND (localStorage) ---------- */
+const STORAGE_KEYS = { PRICES:'irsa_prices_v2', LISTINGS:'irsa_listings_v2' };
+if(!localStorage.getItem(STORAGE_KEYS.PRICES)){
+  const seed = [
+    { crop:'Paddy', price:2100, market:'Tadepalligudem', source:'eNAM', ts:new Date().toISOString() },
+    { crop:'Maize', price:1850, market:'Eluru', source:'Local Mandi', ts:new Date().toISOString() },
+    { crop:'Groundnut', price:4200, market:'Rajahmundry', source:'eNAM', ts:new Date().toISOString() }
+  ];
+  localStorage.setItem(STORAGE_KEYS.PRICES, JSON.stringify(seed));
+}
+if(!localStorage.getItem(STORAGE_KEYS.LISTINGS)) localStorage.setItem(STORAGE_KEYS.LISTINGS, JSON.stringify([]));
+
+/* ---------- PRICES ---------- */
+function fetchPrices(filter){
+  const all = JSON.parse(localStorage.getItem(STORAGE_KEYS.PRICES) || '[]');
+  if(!filter) return all;
+  return all.filter(r=>r.crop.toLowerCase().includes(filter.toLowerCase()));
+}
+function renderPrices(){
+  const filter = (el('priceCropFilter') && el('priceCropFilter').value) ? el('priceCropFilter').value.trim() : '';
+  const arr = fetchPrices(filter);
+  const wrap = el('pricesContainer');
+  if(!wrap) return;
+  if(!arr.length){ wrap.innerHTML = '<div class="card">No prices</div>'; return; }
+  let html = '<table role="table" aria-label="Market prices"><thead><tr><th>Crop</th><th>Price</th><th>Market</th><th>Source</th><th>Time</th></tr></thead><tbody>';
+  arr.forEach(p=>{
+    html += `<tr>
+      <td>${escapeHtml(p.crop)}</td>
+      <td>₹${numberWithCommas(p.price)}</td>
+      <td>${escapeHtml(p.market||'')}</td>
+      <td>${escapeHtml(p.source||'')}</td>
+      <td>${new Date(p.ts).toLocaleString()}</td>
+    </tr>`;
+  });
+  html += '</tbody></table>';
+  wrap.innerHTML = html;
+}
+if(el('btnRefreshPrices')) el('btnRefreshPrices').addEventListener('click', renderPrices);
+if(el('priceCropFilter')) el('priceCropFilter').addEventListener('input', renderPrices);
+renderPrices();
+
+/* ---------- FORECAST (Chart.js) ---------- */
+let forecastChart = null;
+function simpleForecast(price, days=7){
+  const out=[]; let p = Number(price) || 2000;
+  for(let i=0;i<days;i++){
+    const change = (Math.random()-0.45)*(p*0.02);
+    p = Math.max(100, p + change);
+    out.push(Math.round(p));
+  }
+  return out;
+}
+function renderForecast(values, labels){
+  const canvas = el('forecastChart');
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if(forecastChart) forecastChart.destroy();
+  forecastChart = new Chart(ctx, {
+    type:'line',
+    data:{
+      labels,
+      datasets:[{
+        label:'Price (₹)',
+        data: values,
+        fill:true,
+        backgroundColor: gradientFill(ctx, 'rgba(43,122,11,0.12)'),
+        borderColor:'#2b7a0b',
+        tension:0.32,
+        pointRadius:5,
+        pointHoverRadius:7
+      }]
+    },
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      interaction:{mode:'index',intersect:false},
+      scales:{ x:{grid:{display:false}}, y:{grid:{color:'rgba(0,0,0,0.04)'}} },
+      animation:{duration:800,easing:'easeOutCubic'}
+    }
+  });
+}
+function gradientFill(ctx, color){
+  const g = ctx.createLinearGradient(0,0,0,300);
+  g.addColorStop(0, color);
+  g.addColorStop(1, 'rgba(255,255,255,0)');
+  return g;
+}
+if(el('btnGetForecast')) el('btnGetForecast').addEventListener('click', ()=>{
+  const crop = el('forecastCrop') ? el('forecastCrop').value.trim() : 'Paddy';
+  const prices = JSON.parse(localStorage.getItem(STORAGE_KEYS.PRICES) || '[]');
+  const baseObj = prices.find(p=>p.crop.toLowerCase()===crop.toLowerCase());
+  const base = baseObj ? baseObj.price : (prices[0] ? prices[0].price : 2000);
+  const values = simpleForecast(base, 7);
+  const labels = values.map((_,i)=>`Day ${i+1}`);
+  renderForecast(values, labels);
+  if(el('forecastValues')) el('forecastValues').innerHTML = `<strong>Base price (used):</strong> ₹${numberWithCommas(Math.round(base))}`;
+});
+
+/* ---------- LISTINGS (localStorage) ---------- */
+function loadListings(){
+  const arr = JSON.parse(localStorage.getItem(STORAGE_KEYS.LISTINGS) || '[]');
+  const out = arr.map(l => {
+    return `<div class="card" role="article">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div><strong>${escapeHtml(l.farmer||'Anonymous')}</strong> — ${escapeHtml(l.crop)}</div>
+        <div style="font-weight:700;color:var(--green-800)">₹${numberWithCommas(l.price_expected)}</div>
+      </div>
+      <div style="font-size:0.9rem;color:var(--muted);margin-top:6px">${escapeHtml(l.qty || '')} • ${escapeHtml(l.contact || '')}</div>
+      <div style="margin-top:8px;font-size:0.85rem;color:#666">${new Date(l.ts).toLocaleString()}</div>
+    </div>`;
+  }).join('');
+  el('listingsContainer').innerHTML = out || '<div class="card">No listings yet.</div>';
+}
+if(el('listingForm')){
+  el('listingForm').addEventListener('submit', (e)=>{
+    e.preventDefault();
+    const obj = {
+      farmer: el('farmerName').value.trim() || 'Anonymous',
+      crop: el('listingCrop').value.trim() || '',
+      qty: el('listingQty').value.trim() || '',
+      price_expected: Number(el('listingPrice').value) || 0,
+      contact: el('listingContact').value.trim() || '',
+      ts: new Date().toISOString()
+    };
+    const arr = JSON.parse(localStorage.getItem(STORAGE_KEYS.LISTINGS) || '[]');
+    arr.unshift(obj);
+    localStorage.setItem(STORAGE_KEYS.LISTINGS, JSON.stringify(arr));
+    loadListings();
+    el('listingForm').reset();
+    routeTo('listings');
+  });
+}
+if(el('btnClearListings')) el('btnClearListings').addEventListener('click', ()=>{
+  if(confirm('Clear all local listings?')){ localStorage.removeItem(STORAGE_KEYS.LISTINGS); loadListings(); }
+});
+loadListings();
+
+/* ---------- STORAGE ADVISOR ---------- */
+if(el('btnGetAdvice')) el('btnGetAdvice').addEventListener('click', ()=>{
+  const crop = el('advisorCrop').value.trim();
+  const price = Number(el('advisorPrice').value);
+  const qty = el('advisorQty').value.trim();
+  let out = 'Provide current market price for advice.';
+  if(price > 0){
+    const threshold = price * 1.03;
+    if(price < threshold){
+      out = `Advice: Consider storing your produce. Current ₹${numberWithCommas(price)} is below suggested selling threshold ₹${numberWithCommas(Math.round(threshold))}.`;
+    } else {
+      out = `Advice: Good time to sell now at ₹${numberWithCommas(price)}.`;
+    }
+  }
+  el('advisorResult').textContent = out;
+});
+
+/* ---------- UTILITIES ---------- */
+function numberWithCommas(x){ if(x===null||x===undefined) return ''; return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
+function escapeHtml(unsafe){ return String(unsafe).replace(/[&<"']/g, function(m){ return {'&':'&amp;','<':'&lt;','"':'&quot;',"'":'&#039;'}[m];}); }
+
+/* ---------- small UI helpers ---------- */
+/* close menu on resize if desktop */
+window.addEventListener('resize', ()=>{ if(window.innerWidth > 980) closeMenu(); if(forecastChart) forecastChart.resize(); });
+
+/* ensure charts render correctly on load */
+window.addEventListener('load', ()=>{ renderPrices(); loadListings(); /* initial forecast */ (function initForecast(){ const prices = JSON.parse(localStorage.getItem(STORAGE_KEYS.PRICES) || '[]'); const base = prices[0] ? prices[0].price : 2000; const values = simpleForecast(base,7); const labels = values.map((_,i)=>`Day ${i+1}`); renderForecast(values,labels); })(); });
+
+/* keyboard accessibility for menu */
+document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeMenu(); });
+
+/* side-menu item binding (for elements dynamically created earlier) */
+document.querySelectorAll('.side-menu .menu-item').forEach(mi=>{
+  mi.addEventListener('click', ()=>{ const route = mi.dataset.route; routeTo(route); });
+});
+document.querySelectorAll('.topnav .nav-btn').forEach(btn=>{
+  btn.addEventListener('keydown', (e)=>{ if(e.key==='Enter') btn.click(); });
+});
+
+/* re-render prices if storage mutated externally */
+window.addEventListener('storage', (e)=>{ if(e.key && (e.key===STORAGE_KEYS.PRICES || e.key===STORAGE_KEYS.LISTINGS)){ renderPrices(); loadListings(); } });
+
+</script>
+</body>
+</html>
